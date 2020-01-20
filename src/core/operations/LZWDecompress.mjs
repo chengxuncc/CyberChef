@@ -59,7 +59,7 @@ class LZWDecompress extends Operation {
     }
 
     /**
-     * reads a 12 bit code from the binary.
+     * Reads a 12 bit code from the binary.
      *
      * @returns {number}
      */
@@ -69,14 +69,19 @@ class LZWDecompress extends Operation {
         if (!(this.input.length))
             return 0;
 
+        // Removes the first 8 bits from the input.
         this.input = this.input.slice(1);
 
         if (this.__leftOver > 0) {
+
+            // Moves the leftover into the upper byte then addes the current code to it.
             code = (this.__leftOverBits << 8) + code;
             this.__leftOver = 0;
         } else {
             const nextCode = this.input[0];
             this.input = this.input.slice(1);
+
+            // Remove 4 bits to then add it in.
             this.__leftOverBits = nextCode & 0xf;
             this.__leftOver = 1;
             code = (code << 4) + (nextCode >> 4);
@@ -116,15 +121,18 @@ class LZWDecompress extends Operation {
         if (!(previousCode))
             return null;
 
+        // Read in the first code.
         this.result.push(previousCode);
 
         while ((currentCode = this.readBinary()) > 0) {
 
+            // If there is a larger code than 255.
             if (currentCode >= nextCode)
                 this.result.push(firstChar = this.decode(previousCode));
             else
                 firstChar = this.decode(currentCode);
 
+            // If the code is within the dictionary size.
             if (nextCode < 4096)
                 this.dictionaryArrayAdd(previousCode, firstChar, nextCode++);
 

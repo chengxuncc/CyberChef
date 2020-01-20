@@ -68,12 +68,17 @@ class LZWCompress extends Operation {
      * @param {number} code
      */
     writeBinary(code) {
+
+        // If there is leftover bits that still need to be written.
         if (this.__leftOver > 0) {
+            // Since we shift left by 4 and right by 8 we can have 12 bit codes.
             const previousCode = (this.__leftOverBits << 4) + (code >> 8);
             this.result.push(previousCode);
             this.result.push(code);
             this.__leftOver = 0;
         } else {
+
+            // Bit mask the bytes we are going to write.
             this.__leftOverBits = code & 0xf;
             this.__leftOver = 1;
             this.result.push(code>>4);
@@ -91,16 +96,19 @@ class LZWCompress extends Operation {
 
         let prefix = input[0], character, index, nextCode = 256;
 
+        // Remove first element of input since it is the prefix.
         input = input.slice(1);
 
         this.result = [];
 
+        // Initialise ASCII codes.
         this.dictionaryInit();
 
         for (let i = 0; i < input.length+1; i++) {
 
             character = input[i];
 
+            // Check to see if the prefix is already in the dictionary.
             index = this.dictionaryLookup(prefix, character);
 
             if (index !== -1) {
@@ -110,6 +118,7 @@ class LZWCompress extends Operation {
 
                 if (nextCode < 4096) {
 
+                    // As long as the code is less than the dictionarySize then add it.
                     this.dictionaryAdd(prefix, character);
 
                     nextCode++;
@@ -122,6 +131,7 @@ class LZWCompress extends Operation {
 
         this.writeBinary(prefix);
 
+        // If we have a leftover nibble.
         if (this.__leftOver > 0)
             this.result.push(this.__leftOverBits<<4);
 
