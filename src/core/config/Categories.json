@@ -289,6 +289,8 @@
             "Unzip",
             "Bzip2 Decompress",
             "Bzip2 Compress",
+            "LZW Compress",
+            "LZW Decompress",
             "Tar",
             "Untar"
         ]
