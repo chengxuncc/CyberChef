@@ -35,6 +35,11 @@ class ToHex extends Operation {
                 name: "Bytes per line",
                 type: "number",
                 value: 0
+            },
+            {
+                name: "Alphabet",
+                type: "string",
+                value: "0-f"
             }
         ];
     }
@@ -53,6 +58,12 @@ class ToHex extends Operation {
             delim = Utils.charRep(args[0] || "Space");
         }
         const lineSize = args[1];
+
+        if (args[2] !== "0-f") {
+            return toHex(new Uint8Array(input), delim, 2, comma, lineSize).replace(new RegExp("[0-f]", "g"), function (match) {
+                return String.fromCharCode(args[2][0].charCodeAt(0) + "0123456789abcdef".indexOf(match));
+            });
+        }
 
         return toHex(new Uint8Array(input), delim, 2, comma, lineSize);
     }

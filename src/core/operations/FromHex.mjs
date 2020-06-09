@@ -30,6 +30,11 @@ class FromHex extends Operation {
                 name: "Delimiter",
                 type: "option",
                 value: FROM_HEX_DELIM_OPTIONS
+            },
+            {
+                name: "Alphabet",
+                type: "string",
+                value: "0-f"
             }
         ];
         this.checks = [
@@ -93,6 +98,11 @@ class FromHex extends Operation {
      */
     run(input, args) {
         const delim = args[0] || "Auto";
+        if (args[1] !== "0-f") {
+            input = input.replace(new RegExp("[" + args[1] + "]", "g"), function (match) {
+                return "0123456789abcdef".charAt(match.charCodeAt(0)-args[1][0].charCodeAt(0));
+            });
+        }
         return fromHex(input, delim, 2);
     }
 
